@@ -1,116 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:test/mask_blur.dart';
+
+import 'gradient_transform.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MaterialApp(
+    title: 'Flutter Demo',
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      useMaterial3: true,
+    ),
+    home: Material(child: SafeArea(child: const MyApp())),
+  ));
 }
 
-class MyApp extends StatelessWidget {
+enum Issue {
+  gradientTransform,
+  maskBlur,
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  var _showRichText = true;
+class _MyAppState extends State<MyApp> {
+  var _selectedIssue = Issue.maskBlur;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _showRichText ? SafeArea(child: _richText()) : _scrollView(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => setState(() {
-          _showRichText = !_showRichText;
-        }),
-        child: const Icon(Icons.swap_horiz_rounded),
-      ),
-    );
-  }
-
-  Widget _scrollView() => CustomScrollView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        slivers: [
-          const SliverAppBar(
-            title: Text('Scroll View'),
-          ),
-          SliverToBoxAdapter(
-              child: SingleChildScrollView(
-            child: Row(
-              children: [
-                _richText(),
-              ],
-            ),
-          )),
-        ],
-      );
-
-  Widget _richText() => RichText(
-        text: TextSpan(
-          children: [
-            const TextSpan(
-              text: 'Hello, ',
-            ),
-            TextSpan(
-              text: 'John',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  foreground: Paint()
-                    ..shader = const LinearGradient(
-                      colors: [
-                        Colors.red,
-                        Colors.blue,
-                      ],
-                    ).createShader(
-                        const Rect.fromLTWH(0.0, 0.0, 500.0, 800.0))),
-            ),
-          ],
-          style: const TextStyle(
-            fontSize: 44,
-            color: Colors.black,
-          ),
+    return Column(children: [
+      SingleChildScrollView(child: issuesChips()),
+      Expanded(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: selectedIssue(),
         ),
-      );
+      ),
+    ]);
+  }
+
+  Widget issuesChips() {
+    return Row(
+      children: [
+        for (final (index, issue) in Issue.values.indexed) ...[
+          const SizedBox(width: 8),
+          ChoiceChip(
+            label: Text(issue.toString().split('.').last),
+            selected: _selectedIssue == issue,
+            onSelected: (selected) => setState(() {
+              _selectedIssue = issue;
+            }),
+          ),
+        ]
+      ],
+    );
+  }
+
+  Widget selectedIssue() {
+    switch (_selectedIssue) {
+      case Issue.gradientTransform:
+        return const GradientTextTransform(
+          key: ValueKey(#gradient_transform),
+        );
+      case Issue.maskBlur:
+        return const CustomPaintMaskBlur(
+          key: ValueKey(#custom_paint_mask_blur),
+        );
+    }
+  }
 }
