@@ -24,7 +24,7 @@ class _GradientTextTransformState extends State<GradientTextTransform> {
   }
 
   Widget _scrollView() => CustomScrollView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
         slivers: [
           const SliverAppBar(
             title: Text('Scroll View'),

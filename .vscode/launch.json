@@ -11,7 +11,7 @@
             "flutterMode": "debug",
             "toolArgs": [
                 "--no-enable-impeller"
-            ]
+            ],
         },
         {
             "name": "Impeller",

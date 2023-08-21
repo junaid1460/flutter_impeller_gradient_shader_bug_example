@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test/lottie1.dart';
 import 'package:test/mask_blur.dart';
 
 import 'gradient_transform.dart';
@@ -10,14 +11,11 @@ void main() {
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
     ),
-    home: Material(child: SafeArea(child: const MyApp())),
+    home: const Material(child: SafeArea(child: MyApp())),
   ));
 }
 
-enum Issue {
-  gradientTransform,
-  maskBlur,
-}
+enum Issue { gradientTransform, maskBlur, lottie1 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -27,7 +25,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var _selectedIssue = Issue.maskBlur;
+  var _selectedIssue = Issue.lottie1;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +43,7 @@ class _MyAppState extends State<MyApp> {
   Widget issuesChips() {
     return Row(
       children: [
-        for (final (index, issue) in Issue.values.indexed) ...[
+        for (final issue in Issue.values) ...[
           const SizedBox(width: 8),
           ChoiceChip(
             label: Text(issue.toString().split('.').last),
@@ -68,6 +66,10 @@ class _MyAppState extends State<MyApp> {
       case Issue.maskBlur:
         return const CustomPaintMaskBlur(
           key: ValueKey(#custom_paint_mask_blur),
+        );
+      case Issue.lottie1:
+        return const LottieIssue1WithBackground(
+          key: ValueKey(#lottie_issue_1_with_background),
         );
     }
   }
